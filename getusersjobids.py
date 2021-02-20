@@ -2,6 +2,8 @@ import click
 import rich
 from tabulate import tabulate
 import subprocess
+import random
+import tempfile
 
 
 class dataFactory:
@@ -61,7 +63,7 @@ def retrieveIDS(user_id, days, output_file):
             command_4 = subprocess.Popen(["head", "-n", line_number.stdout.strip("\n"), "{}/{}".format(job_log_dir, log)], stdout=subprocess.PIPE)
             final_output = subprocess.run(["tail", "-n", "1"], stdin=command_4.stdout, capture_output=True, text=True)
             command_4.stdout.close()
-            print(final_output.stdout.strip("\n"))
+            output_file.write(final_output.stdout.strip("\n").strip("\t"))
 
 
 @click.command()
@@ -100,7 +102,36 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         exit()
 
     else:
-        pass
+        # Create temporary file to write initial XML
+        temp = "/tmp/{}_get_user_jobs.xml".format(random.randint(1, 1000000))
+        fout = open(temp, "at")
+        fout.write("<Job_Ids>")
+        retrieveIDS(user, days, fout)
+        fout.write("</Job_Ids>")
+        fout.close()
+        fin = open(temp, "rt")
+        content = fin.read()
+        fin.close()
+        print(content)
+
+        # Determine which data format to write out to terminal
+        if xml:
+            pass
+
+        elif json:
+            pass
+
+        elif yaml:
+            pass
+
+        elif csv:
+            pass
+
+        elif table:
+            pass
+
+        else:
+            pass
 
 
 if __name__ == "__main__":
