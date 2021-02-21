@@ -169,7 +169,7 @@ def main(user, days, xml, json, yaml, csv, table, version, license):
                    "for more details type \"getusersjobids --license\". This is free software, \n"
                    "and you are welcome to redistribute it under certain conditions; \n"
                    "go to https://www.gnu.org/licenses/licenses.html for more details.")
-        exit()
+        return
 
     elif license:
         click.echo("""getusersjobids: Retrieve users job ids for processing and analyzation.\n
@@ -185,14 +185,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
-        exit()
+        return
 
     else:
         console = Console()
         if user is None:
             console.print("[bold red]No user id specified![/bold red]")
             console.print("Enter [bold blue]getusersjobids --help[/bold blue] for help.")
-            exit()
+            return
 
         # Create temporary file to write initial XML
         temp = "/tmp/{}_get_user_jobs.xml".format(random.randint(1, 1000000))
@@ -211,42 +211,42 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             if os.path.exists(temp):
                 # Delete temp XML file
                 os.remove(temp)
-            exit()
+            return
 
         elif json:
             data_factory.toJSON()
             if os.path.exists(temp):
                 # Delete temp XML file
                 os.remove(temp)
-            exit()
+            return
 
         elif yaml:
             data_factory.toYAML()
             if os.path.exists(temp):
                 # Delete temp XML file
                 os.remove(temp)
-            exit()
+            return
 
         elif csv:
             data_factory.toCSV()
             if os.path.exists(temp):
                 # Delete temp XML file
                 os.remove(temp)
-            exit()
+            return
 
         elif table:
             data_factory.toTABLE()
             if os.path.exists(temp):
                 # Delete temp XML file
                 os.remove(temp)
-            exit()
+            return
 
         else:
             data_factory.toTABLE()
             if os.path.exists(temp):
                 # Delete temp XML file
                 os.remove(temp)
-            exit()
+            return
 
 
 if __name__ == "__main__":
