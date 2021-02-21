@@ -1,18 +1,22 @@
 import click
-import rich
-from tabulate import tabulate
+from rich.console import Console
+from rich.table import Table
 import subprocess
 import random
 import os
 import tempfile
 from xml.dom import minidom
+import yaml
 import csv
 
 
 class dataFactory:
     """Class to write out jobs ids into specific formats requested by user."""
-    def __init__(self, data):
+    def __init__(self, data, user, days):
         self.data = data
+        self.user = user
+        self.days = days
+        self.console = Console()
 
     def toXML(self):
         """Function to write data in XML format."""
@@ -35,16 +39,30 @@ class dataFactory:
 
         # XML data is created. Write out to command line
         xml_str = root.toprettyxml(indent="\t")
-        print(xml_str)
+        self.console.print(xml_str)
 
         
     def toJSON(self):
         """Function to write data in JSON format."""
-        pass
+        # Grab temp XML document and parse data
+        current_doc = minidom.parse(self.data)
+        current_data = current_doc.getElementsByTagName("Job_Id")
 
     def toYAML(self):
         """Function to write data in YAML format."""
-        pass
+        # Grab temp XML document and parse data
+        current_doc = minidom.parse(self.data)
+        current_data = current_doc.getElementsByTagName("Job_Id")
+
+        # Instantiate an empty list and loop through XML
+        temp_list = list()
+        for data_entry in current_data:
+            data = data_entry.childNodes[0].data
+            temp_list.append(data)
+
+        # Create dictionary and dump YAML
+        dict_file = {"Job_Ids" : temp_list}
+        self.console.print(yaml.dump([dict_file]))
 
     def toCSV(self):
         """Function to write data in CSV format."""
@@ -65,7 +83,7 @@ class dataFactory:
         # Print CSV contents of temp_file
         temp_file.close()
         fin = open(temp_csv, "rt")
-        print(fin.read())
+        self.console.print(fin.read())
         fin.close()
 
         # Clean up
@@ -74,7 +92,20 @@ class dataFactory:
 
     def toTABLE(self):
         """Function to write data in TABLE format."""
-        pass
+        # Grab temp XML document and parse data
+        current_doc = minidom.parse(self.data)
+        current_data = current_doc.getElementsByTagName("Job_Id")
+
+        # Create output table using rich
+        table = Table(title="{}'s job ids for the past {} day(s)".format(self.user, self.days),
+                        show_header=False, show_footer=False)
+        
+        for data_entry in current_data:
+            data = data_entry.childNodes[0].data
+            table.add_row(data)
+
+        # Print out table to terminal window
+        self.console.print(table)
 
 
 def retrieveIDS(user_id, days, output_file):
@@ -156,7 +187,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         fout.close()
 
         # Instantiate dataFactory class to print out data
-        data_factory = dataFactory(temp)
+        data_factory = dataFactory(temp, user, days)
 
         # Determine which data format to write out to terminal
         if xml:
