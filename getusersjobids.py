@@ -4,6 +4,7 @@ from tabulate import tabulate
 import subprocess
 import random
 import tempfile
+from xml.dom import minidom
 
 
 class dataFactory:
@@ -13,7 +14,25 @@ class dataFactory:
 
     def toXML(self):
         """Function to write data in XML format."""
-        pass
+        # Grab temp XML document and parse data
+        current_doc = minidom.parse(self.data)
+        current_data = current_doc.getElementsByTagName("Job_Id")
+
+        # Create new XML document
+        root = minidom.Document()
+        xml = root.createElement('Job_Ids')
+        root.appendChild(xml)
+
+        # Loop through current data and write it out
+        # pretty to the command line
+        for data_entry in current_data:
+            data = data_entry.childNodes[0].data
+            jobChild = root.createElement("Job_Id")
+            text = root.createTextNode(data)
+            jobChild.appendChild(text)
+            xml.appendChild(jobChild)
+
+        
 
     def toJSON(self):
         """Function to write data in JSON format."""
@@ -109,10 +128,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         retrieveIDS(user, days, fout)
         fout.write("</Job_Ids>")
         fout.close()
-        fin = open(temp, "rt")
-        content = fin.read()
-        fin.close()
-        print(content)
+
+        # Instantiate dataFactory class to print out data
+        dataFactory(temp)
 
         # Determine which data format to write out to terminal
         if xml:
