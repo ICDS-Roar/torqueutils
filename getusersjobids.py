@@ -23,8 +23,7 @@ class dataFactory:
         xml = root.createElement('Job_Ids')
         root.appendChild(xml)
 
-        # Loop through current data and write it out
-        # pretty to the command line
+        # Loop through current data
         for data_entry in current_data:
             data = data_entry.childNodes[0].data
             jobChild = root.createElement("Job_Id")
@@ -32,8 +31,11 @@ class dataFactory:
             jobChild.appendChild(text)
             xml.appendChild(jobChild)
 
-        
+        # XML data is created. Write out to command line
+        xml_str = root.toprettyxml(indent="\t")
+        print(xml_str)
 
+        
     def toJSON(self):
         """Function to write data in JSON format."""
         pass
@@ -130,26 +132,27 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         fout.close()
 
         # Instantiate dataFactory class to print out data
-        dataFactory(temp)
+        data_factory = dataFactory(temp)
 
         # Determine which data format to write out to terminal
         if xml:
-            pass
+            data_factory.toXML()
+            exit()
 
         elif json:
-            pass
+            exit()
 
         elif yaml:
-            pass
+            exit()
 
         elif csv:
-            pass
+            exit()
 
         elif table:
-            pass
+            exit()
 
         else:
-            pass
+            exit()
 
 
 if __name__ == "__main__":
