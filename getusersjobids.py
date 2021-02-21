@@ -153,7 +153,7 @@ def retrieveIDS(user_id, days, output_file):
 
 
 @click.command()
-@click.argument("user", nargs=-1)
+@click.option("-u", "--user", default=None, help="User to query (example: jcn23).")
 @click.option("-d", "--days", default=5, help="Specify the number of days to check in the torque job logs (default: 5)")
 @click.option("--xml", is_flag=True, help="Print job ids in XML format")
 @click.option("--json", is_flag=True, help="Print job ids in JSON format")
