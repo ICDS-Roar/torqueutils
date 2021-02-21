@@ -198,7 +198,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         temp = "/tmp/{}_get_user_jobs.xml".format(random.randint(1, 1000000))
         fout = open(temp, "at")
         fout.write("<Job_Ids>")
-        retrieveIDS(user, days, fout)
+        retrieveIDS(user, str(days), fout)
         fout.write("</Job_Ids>")
         fout.close()
 
