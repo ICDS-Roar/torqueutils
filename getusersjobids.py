@@ -108,7 +108,7 @@ class dataFactory:
 
         # Create output table using rich
         table = Table(title="{}'s job ids for the past {} day(s)".format(self.user, self.days),
-                        show_header=False, show_footer=False)
+                        show_header=False, show_footer=False, show_edge=False)
         
         for data_entry in current_data:
             data = data_entry.childNodes[0].data
