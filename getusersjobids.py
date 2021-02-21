@@ -48,6 +48,16 @@ class dataFactory:
         current_doc = minidom.parse(self.data)
         current_data = current_doc.getElementsByTagName("Job_Id")
 
+        # Instantiate empty dictionary and loop through XML
+        dict_file = dict()
+        dict_file["Job_Ids"] = list()
+        for data_entry in current_data:
+            data = data_entry.childNodes[0].data
+            dict_file["Job_Ids"].append({"Job_Id" : data})
+
+        # Dump JSON data to terminal window
+        self.console.print(json.dumps(dict_file, indent=4))
+
     def toYAML(self):
         """Function to write data in YAML format."""
         # Grab temp XML document and parse data
