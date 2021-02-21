@@ -154,12 +154,12 @@ def retrieveIDS(user_id, days, output_file):
 
 @click.command()
 @click.option("-u", "--user", default=None, help="User to query (example: jcn23).")
-@click.option("-d", "--days", default=5, help="Specify the number of days to check in the torque job logs (default: 5)")
-@click.option("--xml", is_flag=True, help="Print job ids in XML format")
-@click.option("--json", is_flag=True, help="Print job ids in JSON format")
-@click.option("--yaml", is_flag=True, help="Print job ids in YAML format")
-@click.option("--csv", is_flag=True, help="Print job ids in CSV format")
-@click.option("--table", is_flag=True, help="Print job ids in tabular format")
+@click.option("-d", "--days", default=5, help="Specify the number of days to check in the torque job logs (default: 5).")
+@click.option("--xml", is_flag=True, help="Print job ids in XML format.")
+@click.option("--json", is_flag=True, help="Print job ids in JSON format.")
+@click.option("--yaml", is_flag=True, help="Print job ids in YAML format.")
+@click.option("--csv", is_flag=True, help="Print job ids in CSV format.")
+@click.option("--table", is_flag=True, help="Print job ids in tabular format.")
 @click.option("-V", "--version", is_flag=True, help="Print version info.")
 @click.option("--license", is_flag=True, help="Print licensing info.")
 def main(user, days, xml, json, yaml, csv, table, version, license):
@@ -188,6 +188,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         exit()
 
     else:
+        console = Console()
+        if user is None:
+            console.print("[bold red]No user id specified![/bold red]")
+            exit()
+
         # Create temporary file to write initial XML
         temp = "/tmp/{}_get_user_jobs.xml".format(random.randint(1, 1000000))
         fout = open(temp, "at")
