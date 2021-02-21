@@ -3,8 +3,10 @@ import rich
 from tabulate import tabulate
 import subprocess
 import random
+import os
 import tempfile
 from xml.dom import minidom
+import csv
 
 
 class dataFactory:
@@ -46,7 +48,29 @@ class dataFactory:
 
     def toCSV(self):
         """Function to write data in CSV format."""
-        pass
+        # Grab temp XML document and parse data
+        current_doc = minidom.parse(self.data)
+        current_data = current_doc.getElementsByTagName("Job_Id")
+
+        # Create tempfile
+        temp_csv = "/tmp/{}_get_user_jobs.csv".format(random.randint(1, 1000000))
+        temp_file = open(temp_csv, "at")
+        job_id_writer = csv.writer(temp_file, delimiter=",")
+
+        # Loop through XML data and write to temp CSV file
+        for data_entry in current_data:
+            data = data_entry.childNodes[0].data
+            job_id_writer.writerow([data])
+
+        # Print CSV contents of temp_file
+        temp_file.close()
+        fin = open(temp_csv, "rt")
+        print(fin.read())
+        fin.close()
+
+        # Clean up
+        if os.path.exists(temp_csv):
+            os.remove(temp_csv)
 
     def toTABLE(self):
         """Function to write data in TABLE format."""
@@ -137,21 +161,44 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         # Determine which data format to write out to terminal
         if xml:
             data_factory.toXML()
+            if os.path.exists(temp):
+                # Delete temp XML file
+                os.remove(temp)
             exit()
 
         elif json:
+            data_factory.toJSON()
+            if os.path.exists(temp):
+                # Delete temp XML file
+                os.remove(temp)
             exit()
 
         elif yaml:
+            data_factory.toYAML()
+            if os.path.exists(temp):
+                # Delete temp XML file
+                os.remove(temp)
             exit()
 
         elif csv:
+            data_factory.toCSV()
+            if os.path.exists(temp):
+                # Delete temp XML file
+                os.remove(temp)
             exit()
 
         elif table:
+            data_factory.toTABLE()
+            if os.path.exists(temp):
+                # Delete temp XML file
+                os.remove(temp)
             exit()
 
         else:
+            data_factory.toTABLE()
+            if os.path.exists(temp):
+                # Delete temp XML file
+                os.remove(temp)
             exit()
 
 
