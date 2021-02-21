@@ -172,7 +172,7 @@ def main(user, days, xml, json, yaml, csv, table, version, license):
         exit()
 
     elif license:
-        click.echo("""getusersjobids: Retrieve users job ids for processing and analization.\n
+        click.echo("""getusersjobids: Retrieve users job ids for processing and analyzation.\n
     Copyright (C) 2021  Jason C. Nucciarone
 
 This program is free software: you can redistribute it and/or modify
