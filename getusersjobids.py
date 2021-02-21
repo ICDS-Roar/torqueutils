@@ -191,6 +191,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         console = Console()
         if user is None:
             console.print("[bold red]No user id specified![/bold red]")
+            console.print("Enter [bold blue]getusersjobids --help[/bold blue] for help.")
             exit()
 
         # Create temporary file to write initial XML
