@@ -4,8 +4,8 @@ from rich.table import Table
 import subprocess
 import random
 import os
-import tempfile
 from xml.dom import minidom
+import json
 import yaml
 import csv
 
