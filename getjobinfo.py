@@ -155,7 +155,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
         elif len(jobid) == 1:
             temp = "/tmp/{}_get_job_info.xml".format(random.randint(1, 1000000))
             fout = open(temp, "at")
-            retrieveJobInfo(str(jobid), str(days), fout)
+            retrieveJobInfo(str(jobid[0]), str(days), fout)
             fout.close()
             fin = open(temp, "rt")
             xml = fin.read()
