@@ -34,7 +34,7 @@ class dataFactory:
 def findJobID(job_id, job_log_dir, log_dir):
     """Function to test if job id exists in the job_log directory on torque."""
     # Execute test command
-    cat_exec = subprocess.Popen(["cat", "{}/{}".format(job_log_dir, job_id)], stdout=subprocess.PIPE)
+    cat_exec = subprocess.Popen(["cat", "{}/{}".format(job_log_dir, log_dir)], stdout=subprocess.PIPE)
     grep_exec = subprocess.run(["grep", job_id], stdin=cat_exec.stdout, capture_output=True, text=True)
     cat_exec.stdout.close()
 
