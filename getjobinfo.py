@@ -82,7 +82,7 @@ def retrieveJobInfo(job_id, days, output_file):
 
             # Get final output and write to temp file
             final_output = subprocess_cmd("sed -n {},{}p {}/{}".format(line_0, line_3, job_log_dir, log))
-            output_file.write(final_output.stdout.strip("\n").strip("\t"))
+            output_file.write(final_output)
             found_job_id = True
             break
 
