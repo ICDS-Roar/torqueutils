@@ -72,10 +72,10 @@ def retrieveJobInfo(job_id, days, output_file):
             line_1 = subprocess_cmd("cat {}/{} | grep -n {} | head -n 1 | cut -d: -f1".format(job_log_dir, log, job_id))
 
             # Get line 0 using commands in the shell
-            line_0 = subprocess_cmd("head -n {} {}/{} | grep -n <Jobinfo> | tail -n1 | cut -d: -f1".format(line_1, job_log_dir, log))
+            line_0 = subprocess_cmd("head -n {} {}/{} | grep -n \"<Jobinfo>\" | tail -n1 | cut -d: -f1".format(line_1, job_log_dir, log))
 
             # Get line 3 using commands in the shell
-            line_3 = subprocess_cmd("tail -n +{} {}/{} | grep -n </Jobinfo> | head -n 1 | cut -d: -f1".format(line_0, job_log_dir, log))
+            line_3 = subprocess_cmd("tail -n +{} {}/{} | grep -n \"</Jobinfo>\" | head -n 1 | cut -d: -f1".format(line_0, job_log_dir, log))
 
             # Reevaluate line 3
             line_3 = subprocess_cmd("expr {} + {}".format(line_3, line_0))
