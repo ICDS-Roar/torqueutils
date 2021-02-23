@@ -51,7 +51,7 @@ def XMLRepair(xml_input):
         tmp3 = tmp2.replace(">", '&gt;')
         tmp4 = tmp3.replace("'", '&#39;')
         tmp5 = tmp4.replace('"', '&#34;')
-        jobscript.text = tmp5
+        jobscript.string = tmp5
 
     # Return corrected XML
     return str(soup)
