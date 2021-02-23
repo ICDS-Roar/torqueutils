@@ -8,6 +8,8 @@ from xml.dom import minidom
 import json
 import yaml
 import csv
+import lxml
+from bs4 import BeautifulSoup
 
 
 class dataFactory:
@@ -31,9 +33,28 @@ class dataFactory:
         pass
 
 
-def subprocess_cmd(command):
+def subprocessCMD(command):
     process = subprocess.run(command, capture_output=True, text=True, shell=True)
     return process.stdout.strip("\n")
+
+
+def XMLRepair(xml_input):
+    """Function to fix job script notation in original XML output"""
+    # Use beautiful soup to parse malformed XML tag
+    soup = BeautifulSoup(xml_input, features="xml")
+
+    # Loop through job_script tags
+    for jobscript in soup.find_all("job_script"):
+        tmp = jobscript.text
+        tmp1 = tmp.replace("&", '&#38;')
+        tmp2 = tmp1.replace("<", '&lt;')
+        tmp3 = tmp2.replace(">", '&gt;')
+        tmp4 = tmp3.replace("'", '&#39;')
+        tmp5 = tmp4.replace('"', '&#34;')
+        jobscript.text = tmp5
+
+    # Return corrected XML
+    return str(soup)
 
 
 def findJobID(job_id, job_log_dir, log_dir):
@@ -69,19 +90,20 @@ def retrieveJobInfo(job_id, days, output_file):
     for log in logs_list:
         if findJobID(job_id, job_log_dir, log):
             # Get line 1 using commands in the shell
-            line_1 = subprocess_cmd("cat {}/{} | grep -n {} | head -n 1 | cut -d: -f1".format(job_log_dir, log, job_id))
+            line_1 = subprocessCMD("cat {}/{} | grep -n {} | head -n 1 | cut -d: -f1".format(job_log_dir, log, job_id))
 
             # Get line 0 using commands in the shell
-            line_0 = subprocess_cmd("head -n {} {}/{} | grep -n \"<Jobinfo>\" | tail -n1 | cut -d: -f1".format(line_1, job_log_dir, log))
+            line_0 = subprocessCMD("head -n {} {}/{} | grep -n \"<Jobinfo>\" | tail -n1 | cut -d: -f1".format(line_1, job_log_dir, log))
 
             # Get line 3 using commands in the shell
-            line_3 = subprocess_cmd("tail -n +{} {}/{} | grep -n \"</Jobinfo>\" | head -n 1 | cut -d: -f1".format(line_0, job_log_dir, log))
+            line_3 = subprocessCMD("tail -n +{} {}/{} | grep -n \"</Jobinfo>\" | head -n 1 | cut -d: -f1".format(line_0, job_log_dir, log))
 
             # Reevaluate line 3
-            line_3 = subprocess_cmd("expr {} + {}".format(line_3, line_0))
+            line_3 = subprocessCMD("expr {} + {}".format(line_3, line_0))
 
             # Get final output and write to temp file
-            final_output = subprocess_cmd("sed -n {},{}p {}/{}".format(line_0, line_3, job_log_dir, log))
+            almost_final_output = subprocessCMD("sed -n {},{}p {}/{}".format(line_0, line_3, job_log_dir, log))
+            final_output = XMLRepair(almost_final_output)
             output_file.write(final_output)
             found_job_id = True
             break
