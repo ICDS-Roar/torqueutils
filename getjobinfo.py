@@ -10,6 +10,7 @@ import yaml
 import csv
 import lxml
 from bs4 import BeautifulSoup
+import xml.etree.ElementTree as et
 
 
 class dataFactory:
@@ -24,9 +25,6 @@ class dataFactory:
         pass
 
     def toYAML(self):
-        pass
-
-    def toCSV(self):
         pass
 
     def toTABLE(self):
@@ -120,11 +118,10 @@ def retrieveJobInfo(job_id, days, output_file):
 @click.option("--xml", is_flag=True, help="Print job info in XML format.")
 @click.option("--json", is_flag=True, help="Print job info in JSON format.")
 @click.option("--yaml", is_flag=True, help="Print job info in YAML format.")
-@click.option("--csv", is_flag=True, help="Print job info in CSV format.")
 @click.option("--table", is_flag=True, help="Print job info in tabular format.")
 @click.option("-V", "--version", is_flag=True, help="Print version info.")
 @click.option("--license", is_flag=True, help="Print licensing info.")
-def main(jobid, file, days, xml, json, yaml, csv, table, version, license):
+def main(jobid, file, days, xml, json, yaml, table, version, license):
     if version:
         click.echo("getjobinfo v2.0  Copyright (C) 2021  Jason C. Nucciarone \n\n"
                    "This program comes with ABSOLUTELY NO WARRANTY; \n"
@@ -162,12 +159,46 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             fout = open(temp, "at")
             retrieveJobInfo(str(jobid[0]), str(days), fout)
             fout.close()
-            fin = open(temp, "rt")
-            xml = fin.read()
-            fin.close()
-            print(xml)
-            return
 
+            # Create dataFactory to process data
+            datafactory = dataFactory(temp)
+
+            # Call function in data factory according to what is specified by the user
+            if xml:
+                dataFactory.toXML()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            elif json:
+                dataFactory.toJSON()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            elif yaml:
+                dataFactory.toYAML()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            elif table:
+                dataFactory.toTABLE()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            else:
+                dataFactory.toTABLE()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+            
         else:
             print("Multiple!")
             return
