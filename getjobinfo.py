@@ -14,14 +14,16 @@ import xml.etree.ElementTree as et
 
 
 class dataFactory:
-    def __init__(self, data):
+    def __init__(self, data, jobid):
         self.data = data
+        self.jobid = jobid
         self.console = Console()
 
     def toXML(self):
-        # Short and sweet
-        current_doc = minidom.parse(self.data)
-        xml_str = current_doc.toprettyxml(indent="\t")
+        # Short and sweet. Just read file
+        fin = open(self.data, "rt")
+        xml_str = fin.read()
+        fin.close()
         self.console.print(xml_str)
 
     def toJSON(self):
@@ -31,7 +33,31 @@ class dataFactory:
         pass
 
     def toTABLE(self):
-        pass
+        tree = et.ElementTree(file=self.data)
+        root = tree.getroot()
+        content_list = list()
+
+        # Read through document and items to content list
+        for child in root:
+            if child.text != "\n":
+                content_list.append((child.tag, child.text))
+            for grandchild in child:
+                if grandchild.text != "\n":
+                    content_list.append((grandchild.tag, grandchild.text))
+
+        # Once document has been read through create table
+        table = Table(title="Info for job {}".format(self.jobid))
+
+        # Add columns
+        table.add_column("Tag Name:", justify="center")
+        table.add_column("Content:", justify="center")
+
+        # Add rows
+        for item in content_list:
+            table.add_row(item[0], item[1])
+
+        # Print out final table to terminal window
+        self.console.print(table)
 
 
 def subprocessCMD(command):
@@ -165,7 +191,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             fout.close()
 
             # Create dataFactory to process data
-            datafactory = dataFactory(temp)
+            datafactory = dataFactory(temp, jobid[0])
 
             # Call function in data factory according to what is specified by the user
             if xml:
@@ -197,7 +223,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                 return
 
             else:
-                dataFactory.toTABLE()
+                datafactory.toTABLE()
                 if os.path.exists(temp):
                     # Delete temp XML file
                     os.remove(temp)
