@@ -19,7 +19,10 @@ class dataFactory:
         self.console = Console()
 
     def toXML(self):
-        pass
+        # Short and sweet
+        current_doc = minidom.parse(self.data)
+        xml_str = current_doc.toprettyxml(indent="\t")
+        self.console.print(xml_str)
 
     def toJSON(self):
         pass
@@ -32,6 +35,7 @@ class dataFactory:
 
 
 def subprocessCMD(command):
+    """Function to make chaining commands together much easier."""
     process = subprocess.run(command, capture_output=True, text=True, shell=True)
     return process.stdout.strip("\n")
 
@@ -165,28 +169,28 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
 
             # Call function in data factory according to what is specified by the user
             if xml:
-                dataFactory.toXML()
+                datafactory.toXML()
                 if os.path.exists(temp):
                     # Delete temp XML file
                     os.remove(temp)
                 return
 
             elif json:
-                dataFactory.toJSON()
+                datafactory.toJSON()
                 if os.path.exists(temp):
                     # Delete temp XML file
                     os.remove(temp)
                 return
 
             elif yaml:
-                dataFactory.toYAML()
+                datafactory.toYAML()
                 if os.path.exists(temp):
                     # Delete temp XML file
                     os.remove(temp)
                 return
 
             elif table:
-                dataFactory.toTABLE()
+                datafactory.toTABLE()
                 if os.path.exists(temp):
                     # Delete temp XML file
                     os.remove(temp)
