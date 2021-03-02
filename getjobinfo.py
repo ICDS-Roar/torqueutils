@@ -20,6 +20,7 @@ class dataFactory:
         self.console = Console()
 
     def toXML(self):
+        """Function to write data in XML format."""
         # Short and sweet. Just read file
         fin = open(self.data, "rt")
         xml_str = fin.read()
@@ -27,23 +28,34 @@ class dataFactory:
         self.console.print(xml_str)
 
     def toJSON(self):
-        pass
+        """Function to write data in JSON format."""
+        # Pull tags and text from XML document
+        content_list = self.__parseData()
+
+        # Create dictionary and dump to JSON
+        temp_dict = dict()
+        temp_dict["Jobinfo"] = list()
+        for item in content_list:
+            temp_dict["Jobinfo"].append({item[0]:item[1]})
+
+        self.console.print(json.dumps(temp_dict, indent=4))
 
     def toYAML(self):
-        pass
+        """Function to write data in YAML format."""
+        # Pull tags and text from XML document
+        content_list = self.__parseData()
+
+        # Create dictionary and dump to YAML
+        temp_dict = dict()
+        for item in content_list:
+            temp_dict.update({item[0]:item[1]})
+
+        self.console.print(yaml.dump([temp_dict]))
 
     def toTABLE(self):
-        tree = et.ElementTree(file=self.data)
-        root = tree.getroot()
-        content_list = list()
-
-        # Read through document and items to content list
-        for child in root:
-            if child.text != "\n":
-                content_list.append((child.tag, child.text))
-            for grandchild in child:
-                if grandchild.text != "\n":
-                    content_list.append((grandchild.tag, grandchild.text))
+        """Function to write data in tabular format."""
+        # Pull tags and text from XML document
+        content_list = self.__parseData()
 
         # Once document has been read through create table
         table = Table(title="Info for job {}".format(self.jobid))
@@ -58,6 +70,22 @@ class dataFactory:
 
         # Print out final table to terminal window
         self.console.print(table)
+
+    def __parseData(self):
+        """Simple function to retrieve all the XML tag names and text."""
+        tree = et.ElementTree(file=self.data)
+        root = tree.getroot()
+        content_list = list()
+
+        # Read through document and items to content list
+        for child in root:
+            if child.text != "\n":
+                content_list.append((child.tag, child.text))
+            for grandchild in child:
+                if grandchild.text != "\n":
+                    content_list.append((grandchild.tag, grandchild.text))
+
+        return content_list
 
 
 def subprocessCMD(command):
