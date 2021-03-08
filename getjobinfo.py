@@ -116,13 +116,8 @@ def XMLRepair(xml_input):
 def findJobID(job_id, job_log_dir, log_dir):
     """Function to test if job id exists in the job_log directory on torque."""
     # Execute test command
-    cat_exec = subprocess.Popen(["cat", "{}/{}".format(job_log_dir, log_dir)], stdout=subprocess.PIPE)
-    grep_exec = subprocess.run(["grep", job_id], stdin=cat_exec.stdout, capture_output=True, text=True)
-    cat_exec.stdout.close()
-
-    # Verify if job id exists
-    grep_exec.stdout.strip("\n").strip(" ")
-    if grep_exec.stdout != "":
+    command_exec = subprocessCMD("cat {}/{} | grep {}".format(job_log_dir, log_dir, job_id))
+    if command_exec != "":
         return True
 
     else:
@@ -133,12 +128,10 @@ def retrieveJobInfo(job_id, days, output_file):
     """Retrieve the XML job info stored in the job_log directory on torque."""
      # Retreive past couple of job log directories
     job_log_dir = "/var/spool/torque/job_logs"
-    job_logs = subprocess.Popen(["ls", job_log_dir, "-t"], stdout=subprocess.PIPE)
-    logs = subprocess.run(["head", "-n", days], stdin=job_logs.stdout, capture_output=True, text=True)
-    job_logs.stdout.close()
+    logs = subprocessCMD("ls {} -t | head -n {}".format(job_log_dir, days))
 
     # Convert logs.stdout to a list and remove any blank lines
-    logs_list = logs.stdout.split("\n")
+    logs_list = logs.split("\n")
     logs_list.remove("")
 
     # Loop through job log to find job info
