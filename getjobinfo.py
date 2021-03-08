@@ -170,7 +170,7 @@ def retrieveJobInfo(job_id, days, output_file):
 
 
 @click.command()
-@click.argument("jobid", nargs=-1)
+@click.argument("jobid", nargs=1)
 @click.option("-f", "--file", default=None, help="Read job ids to query from an XML file instead.")
 @click.option("-d", "--days", default=5, help="Specify the number of days to check in the torque job logs (default: 5).")
 @click.option("--xml", is_flag=True, help="Print job info in XML format.")
@@ -212,7 +212,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
             return
 
-        elif len(jobid) == 1:
+        else:
             temp = "/tmp/{}_get_job_info.xml".format(random.randint(1, 1000000))
             fout = open(temp, "at")
             retrieveJobInfo(str(jobid[0]), str(days), fout)
@@ -256,11 +256,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                     # Delete temp XML file
                     os.remove(temp)
                 return
+
             
-        else:
-            print("Multiple!")
-            return
-
-
 if __name__ == "__main__":
     main()
