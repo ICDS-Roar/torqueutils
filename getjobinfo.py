@@ -132,7 +132,12 @@ def retrieveJobInfo(job_id, days, output_file):
 
     # Convert logs.stdout to a list and remove any blank lines
     logs_list = logs.split("\n")
-    logs_list.remove("")
+    
+    try:
+        logs_list.remove("")
+
+    except ValueError:
+        pass
 
     # Loop through job log to find job info
     found_job_id = False
