@@ -230,30 +230,35 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                     if os.path.exists(temp):
                         # Delete temp XML file
                         os.remove(temp)
+                    print("\n")
 
                 elif json:
                     datafactory.toJSON()
                     if os.path.exists(temp):
                         # Delete temp XML file
                         os.remove(temp)
+                    print("\n")
 
                 elif yaml:
                     datafactory.toYAML()
                     if os.path.exists(temp):
                         # Delete temp XML file
                         os.remove(temp)
+                    print("\n")
 
                 elif table:
                     datafactory.toTABLE()
                     if os.path.exists(temp):
                         # Delete temp XML file
                         os.remove(temp)
+                    print("\n")
 
                 else:
                     datafactory.toTABLE()
                     if os.path.exists(temp):
                         # Delete temp XML file
                         os.remove(temp)
+                    print("\n")
 
             return
 
