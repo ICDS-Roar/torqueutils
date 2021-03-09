@@ -2,7 +2,6 @@ import click
 from rich.console import Console
 from rich.table import Table
 import subprocess
-import multiprocessing
 import random
 import os
 from xml.dom import minidom
@@ -263,26 +262,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             for job in jobid:
                 tmp_xml_files.append("/tmp/{}_get_job_info.xml".format(job))
 
-            # Start all the jobs
-            process_list = list()
-            i = 0 
+            # Get info on all the jobs
+            i = 0
             for job in jobid:
-                try:
-                    fout = open(tmp_xml_files[i], "at")
-                    i += 1
-                    process = multiprocessing.Process(target=retrieveJobInfo,
-                                                        args=(str(job), str(days), fout))
-                    process_list.append(process)
-                    process.start()
-
-                except multiprocessing.ProcessError:
-                    console.print("[bold red]Something went wrong trying to query mutliple job ids![bold red]")
-                    console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
-
-            # Block until all the jobs have been completed
-            for process in process_list:
-                process.join()
-
+                fout = open(tmp_xml_files[i], "at")
+                retrieveJobInfo(str(job), str(days), fout)
+                fout.close()
+                i += 1
+            
             i = 0
             for xml_file in tmp_xml_files:
                 datafactory = dataFactory(xml_file, jobid[i])
