@@ -289,7 +289,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                     print("\n")
 
                 else:
-                    datafactory.toTABLE()
+                    datafactory.toXML()
                     if os.path.exists(temp):
                         # Delete temp XML file
                         os.remove(temp)
@@ -342,7 +342,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                 return
 
             else:
-                datafactory.toTABLE()
+                datafactory.toXML()
                 if os.path.exists(temp):
                     # Delete temp XML file
                     os.remove(temp)
@@ -397,7 +397,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                     print("\n")
 
                 else:
-                    datafactory.toTABLE()
+                    datafactory.toXML()
                     if os.path.exists(xml_file):
                         # Delete temp XML file
                         os.remove(xml_file)
