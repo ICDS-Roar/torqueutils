@@ -26,7 +26,7 @@ class dataFactory:
         xml_data = fin.read()
         fin.close()
         soup = BeautifulSoup(xml_data, features="xml")
-        self.console.print(self.__reformXML(soup.prettify()))
+        self.console.print(self.__reformXML(str(soup)))
 
     def toJSON(self):
         """Function to write data in JSON format."""
