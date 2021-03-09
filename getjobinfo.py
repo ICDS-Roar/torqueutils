@@ -26,6 +26,17 @@ class dataFactory:
         xml_data = fin.read()
         fin.close()
         soup = BeautifulSoup(xml_data, features="xml")
+
+        # Reform XML
+        for job_script in soup.find_all("job_script"):
+            tmp = job_script.text
+            tmp1 = tmp.replace('&#38;', "&")
+            tmp2 = tmp1.replace('&lt;', "<")
+            tmp3 = tmp2.replace('&gt;', ">")
+            tmp4 = tmp3.replace('&#39;', "'")
+            tmp5 = tmp4.replace('&#34;', '"')
+            job_script.string = tmp5
+
         self.console.print(soup.prettify())
 
     def toJSON(self):
@@ -37,7 +48,11 @@ class dataFactory:
         temp_dict = dict()
         temp_dict["Jobinfo"] = list()
         for item in content_list:
-            temp_dict["Jobinfo"].append({item[0]:item[1]})
+            if item[0] == "job_script":
+                temp_dict["Jobinfo"].append({item[0]:self.__reformXML(item[1])})
+            
+            else:
+                temp_dict["Jobinfo"].append({item[0]:item[1]})
 
         self.console.print(json.dumps(temp_dict, indent=4))
 
@@ -49,7 +64,11 @@ class dataFactory:
         # Create dictionary and dump to YAML
         temp_dict = dict()
         for item in content_list:
-            temp_dict.update({item[0]:item[1]})
+            if item[0] == "job_script":
+                temp_dict.update({item[0]:self.__reformXML(item[1])})
+            
+            else:
+                temp_dict.update({item[0]:item[1]})
 
         self.console.print(yaml.dump([temp_dict]))
 
@@ -67,7 +86,11 @@ class dataFactory:
 
         # Add rows
         for item in content_list:
-            table.add_row(item[0], item[1])
+            if item[0] == "job_script":
+                table.add_row(item[0], self.__reformXML(item[1]))
+            
+            else:
+                table.add_row(item[0], item[1])
 
         # Print out final table to terminal window
         self.console.print(table)
@@ -87,6 +110,18 @@ class dataFactory:
                     content_list.append((grandchild.tag, grandchild.text))
 
         return content_list
+
+    def __reformXML(self, job_script):
+        """Simple function to turn certain XML characters back into human-readable form."""
+        tmp = job_script
+        tmp1 = tmp.replace('&#38;', "&")
+        tmp2 = tmp1.replace('&lt;', "<")
+        tmp3 = tmp2.replace('&gt;', ">")
+        tmp4 = tmp3.replace('&#39;', "'")
+        tmp5 = tmp4.replace('&#34;', '"')
+        
+        # Return reformatted string
+        return tmp5
 
 
 def subprocessCMD(command):
@@ -254,7 +289,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                     print("\n")
 
                 else:
-                    datafactory.toTABLE()
+                    datafactory.toXML()
                     if os.path.exists(temp):
                         # Delete temp XML file
                         os.remove(temp)
@@ -307,7 +342,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                 return
 
             else:
-                datafactory.toTABLE()
+                datafactory.toXML()
                 if os.path.exists(temp):
                     # Delete temp XML file
                     os.remove(temp)
@@ -362,7 +397,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                     print("\n")
 
                 else:
-                    datafactory.toTABLE()
+                    datafactory.toXML()
                     if os.path.exists(xml_file):
                         # Delete temp XML file
                         os.remove(xml_file)
