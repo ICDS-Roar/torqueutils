@@ -211,6 +211,56 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
             return
 
+        elif file is not None:
+            current_doc = minidom.parse(file)
+            current_data = current_doc.getElementsByTagName("Job_Id")
+
+            # Loop through each XML tag within the file
+            for data_entry in current_data:
+                data = data_entry.childNodes[0].data
+                job_id = data.split(".")
+
+                # Get job info
+                temp = "/tmp/{}_get_job_info.xml".format(job_id[0])
+                fout = open(temp, "at")
+                retrieveJobInfo(str(job_id[0]), str(days), fout)
+                fout.close()
+
+                # Print job info out to terminal window
+                datafactory = dataFactory(temp, job_id[0])
+
+                if xml:
+                    datafactory.toXML()
+                    if os.path.exists(temp):
+                        # Delete temp XML file
+                        os.remove(temp)
+
+                elif json:
+                    datafactory.toJSON()
+                    if os.path.exists(temp):
+                        # Delete temp XML file
+                        os.remove(temp)
+
+                elif yaml:
+                    datafactory.toYAML()
+                    if os.path.exists(temp):
+                        # Delete temp XML file
+                        os.remove(temp)
+
+                elif table:
+                    datafactory.toTABLE()
+                    if os.path.exists(temp):
+                        # Delete temp XML file
+                        os.remove(temp)
+
+                else:
+                    datafactory.toTABLE()
+                    if os.path.exists(temp):
+                        # Delete temp XML file
+                        os.remove(temp)
+
+            return
+        
         elif len(jobid) == 1:
             temp = "/tmp/{}_get_job_info.xml".format(random.randint(1, 1000000))
             fout = open(temp, "at")
