@@ -22,10 +22,8 @@ class dataFactory:
     def toXML(self):
         """Function to write data in XML format."""
         # Short and sweet. Just read file
-        fin = open(self.data, "rt")
-        xml_str = fin.read()
-        fin.close()
-        self.console.print(xml_str)
+        soup = BeautifulSoup(self.data, features="xml")
+        self.console.print(soup.prettify())
 
     def toJSON(self):
         """Function to write data in JSON format."""
@@ -58,11 +56,11 @@ class dataFactory:
         content_list = self.__parseData()
 
         # Once document has been read through create table
-        table = Table(title="Info for job {}".format(self.jobid))
+        table = Table(title="Info for job {}".format(self.jobid), show_lines=True)
 
         # Add columns
-        table.add_column("Tag Name:", justify="center")
-        table.add_column("Content:", justify="center")
+        table.add_column("Tag Name:", justify="left")
+        table.add_column("Content:", justify="left")
 
         # Add rows
         for item in content_list:
