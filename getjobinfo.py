@@ -268,7 +268,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             i = 0 
             for job in jobid:
                 try:
-                    fout = open(tmp_xml_files[i])
+                    fout = open(tmp_xml_files[i], "at")
                     i += 1
                     process = multiprocessing.Process(target=retrieveJobInfo,
                                                         args=(str(job), str(days), fout))
