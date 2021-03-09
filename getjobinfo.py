@@ -26,7 +26,18 @@ class dataFactory:
         xml_data = fin.read()
         fin.close()
         soup = BeautifulSoup(xml_data, features="xml")
-        self.console.print(self.__reformXML(str(soup)))
+
+        # Reform XML
+        for job_script in soup.find_all("job_script"):
+            tmp = job_script.text
+            tmp1 = tmp.replace('&#38;', "&")
+            tmp2 = tmp1.replace('&lt;', "<")
+            tmp3 = tmp2.replace('&gt;', ">")
+            tmp4 = tmp3.replace('&#39;', "'")
+            tmp5 = tmp4.replace('&#34;', '"')
+            job_script.string = tmp5
+
+        self.console.print(soup.prettify())
 
     def toJSON(self):
         """Function to write data in JSON format."""
