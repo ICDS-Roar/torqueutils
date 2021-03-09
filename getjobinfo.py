@@ -2,6 +2,7 @@ import click
 from rich.console import Console
 from rich.table import Table
 import subprocess
+import multiprocessing
 import random
 import os
 from xml.dom import minidom
@@ -211,7 +212,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
             return
 
-        else:
+        elif len(jobid) == 1:
             temp = "/tmp/{}_get_job_info.xml".format(random.randint(1, 1000000))
             fout = open(temp, "at")
             retrieveJobInfo(str(jobid[0]), str(days), fout)
@@ -255,6 +256,75 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                     # Delete temp XML file
                     os.remove(temp)
                 return
+
+        else:
+            # Loop through jobs specified by the user
+            tmp_xml_files = list()
+            for job in jobid:
+                tmp_xml_files.append("/tmp/{}_get_job_info.xml".format(job))
+
+            # Start all the jobs
+            process_list = list()
+            i = 0 
+            for job in jobid:
+                try:
+                    fout = open(tmp_xml_files[i])
+                    i += 1
+                    process = multiprocessing.Process(target=retrieveJobInfo,
+                                                        args=(str(job), str(days), fout))
+                    process_list.append(process)
+                    process.start()
+
+                except multiprocessing.ProcessError:
+                    console.print("[bold red]Something went wrong trying to query mutliple job ids![bold red]")
+                    console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
+
+            # Block until all the jobs have been completed
+            for process in process_list:
+                process.join()
+
+            i = 0
+            for xml_file in tmp_xml_files:
+                datafactory = dataFactory(xml_file, jobid[i])
+                i += 1
+
+                # Print out the data in the format specified by the user
+                if xml:
+                    datafactory.toXML()
+                    if os.path.exists(xml_file):
+                        # Delete temp XML file
+                        os.remove(xml_file)
+                    print("\n")
+
+                elif json:
+                    datafactory.toJSON()
+                    if os.path.exists(xml_file):
+                        # Delete temp XML file
+                        os.remove(xml_file)
+                    print("\n")
+
+                elif yaml:
+                    datafactory.toYAML()
+                    if os.path.exists(xml_file):
+                        # Delete temp XML file
+                        os.remove(xml_file)
+                    print("\n")
+
+                elif table:
+                    datafactory.toTABLE()
+                    if os.path.exists(xml_file):
+                        # Delete temp XML file
+                        os.remove(xml_file)
+                    print("\n")
+
+                else:
+                    datafactory.toTABLE()
+                    if os.path.exists(xml_file):
+                        # Delete temp XML file
+                        os.remove(xml_file)
+                    print("\n")
+
+            return
 
             
 if __name__ == "__main__":
