@@ -205,13 +205,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
 
     else:
         console = Console()
-        # Check if user specified any job ids
-        if len(jobid) == 0:
-            console.print("[bold red]No job ids specified![/bold red]")
-            console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
-            return
-
-        elif file is not None:
+        
+        # Read job ids from a file
+        if file is not None:
             current_doc = minidom.parse(file)
             current_data = current_doc.getElementsByTagName("Job_Id")
 
@@ -259,6 +255,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
                         # Delete temp XML file
                         os.remove(temp)
 
+            return
+
+        # Check if user specified any job ids
+        elif len(jobid) == 0:
+            console.print("[bold red]No job ids specified![/bold red]")
+            console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
             return
         
         elif len(jobid) == 1:
