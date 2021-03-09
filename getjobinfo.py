@@ -22,7 +22,10 @@ class dataFactory:
     def toXML(self):
         """Function to write data in XML format."""
         # Short and sweet. Just read file
-        soup = BeautifulSoup(self.data, features="xml")
+        fin = open(self.data, "rt")
+        xml_data = fin.read()
+        fin.close()
+        soup = BeautifulSoup(xml_data, features="xml")
         self.console.print(soup.prettify())
 
     def toJSON(self):
