@@ -223,7 +223,7 @@ def main(jobid, file, days, xml, json, yaml, table, version, license):
         return
 
     elif license:
-        click.echo("""getjobinfo: Retrieve users job ids for processing and analyzation.\n
+        click.echo("""getjobinfo: Query job ids to collect corresponding job info.\n
     Copyright (C) 2021  Jason C. Nucciarone
 
 This program is free software: you can redistribute it and/or modify
