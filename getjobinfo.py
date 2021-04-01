@@ -11,6 +11,15 @@ import csv
 import lxml
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as et
+from utils.verifylocale import verifylocale
+
+
+# Set locale to UTF-8 before continuing
+out, err = verifylocale()
+if err != None:
+    console = Console()
+    console.print("Uh oh. Looks like the UTF-8 locale is not supported on your system.", 
+                    "Please try using [bold blue]locale-gen en_US.UTF-8[/bold blue] before continuing.")
 
 
 class dataFactory:
@@ -214,196 +223,200 @@ def retrieveJobInfo(job_id, days, output_file):
 @click.option("-V", "--version", is_flag=True, help="Print version info.")
 @click.option("--license", is_flag=True, help="Print licensing info.")
 def main(jobid, file, days, xml, json, yaml, table, version, license):
-    if version:
-        click.echo("getjobinfo v2.0  Copyright (C) 2021  Jason C. Nucciarone \n\n"
-                   "This program comes with ABSOLUTELY NO WARRANTY; \n"
-                   "for more details type \"getjobinfo --license\". This is free software, \n"
-                   "and you are welcome to redistribute it under certain conditions; \n"
-                   "go to https://www.gnu.org/licenses/licenses.html for more details.")
-        return
-
-    elif license:
-        click.echo("""getjobinfo: Query job ids to collect corresponding job info.\n
-    Copyright (C) 2021  Jason C. Nucciarone
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
-        return
-
-    else:
-        console = Console()
-        
-        # Read job ids from a file
-        if file is not None:
-            current_doc = minidom.parse(file)
-            current_data = current_doc.getElementsByTagName("Job_Id")
-
-            # Loop through each XML tag within the file
-            for data_entry in current_data:
-                data = data_entry.childNodes[0].data
-                job_id = data.split(".")
-
-                # Get job info
-                temp = "/tmp/{}_get_job_info.xml".format(job_id[0])
-                fout = open(temp, "at")
-                retrieveJobInfo(str(job_id[0]), str(days), fout)
-                fout.close()
-
-                # Print job info out to terminal window
-                datafactory = dataFactory(temp, job_id[0])
-
-                if xml:
-                    datafactory.toXML()
-                    if os.path.exists(temp):
-                        # Delete temp XML file
-                        os.remove(temp)
-                    print("\n")
-
-                elif json:
-                    datafactory.toJSON()
-                    if os.path.exists(temp):
-                        # Delete temp XML file
-                        os.remove(temp)
-                    print("\n")
-
-                elif yaml:
-                    datafactory.toYAML()
-                    if os.path.exists(temp):
-                        # Delete temp XML file
-                        os.remove(temp)
-                    print("\n")
-
-                elif table:
-                    datafactory.toTABLE()
-                    if os.path.exists(temp):
-                        # Delete temp XML file
-                        os.remove(temp)
-                    print("\n")
-
-                else:
-                    datafactory.toXML()
-                    if os.path.exists(temp):
-                        # Delete temp XML file
-                        os.remove(temp)
-                    print("\n")
-
+    try:
+        if version:
+            click.echo("getjobinfo v2.0  Copyright (C) 2021  Jason C. Nucciarone \n\n"
+                    "This program comes with ABSOLUTELY NO WARRANTY; \n"
+                    "for more details type \"getjobinfo --license\". This is free software, \n"
+                    "and you are welcome to redistribute it under certain conditions; \n"
+                    "go to https://www.gnu.org/licenses/licenses.html for more details.")
             return
 
-        # Check if user specified any job ids
-        elif len(jobid) == 0:
-            console.print("[bold red]No job ids specified![/bold red]")
-            console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
+        elif license:
+            click.echo("""getjobinfo: Query job ids to collect corresponding job info.\n
+        Copyright (C) 2021  Jason C. Nucciarone
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             return
-        
-        elif len(jobid) == 1:
-            temp = "/tmp/{}_get_job_info.xml".format(random.randint(1, 1000000))
-            fout = open(temp, "at")
-            retrieveJobInfo(str(jobid[0]), str(days), fout)
-            fout.close()
-
-            # Create dataFactory to process data
-            datafactory = dataFactory(temp, jobid[0])
-
-            # Call function in data factory according to what is specified by the user
-            if xml:
-                datafactory.toXML()
-                if os.path.exists(temp):
-                    # Delete temp XML file
-                    os.remove(temp)
-                return
-
-            elif json:
-                datafactory.toJSON()
-                if os.path.exists(temp):
-                    # Delete temp XML file
-                    os.remove(temp)
-                return
-
-            elif yaml:
-                datafactory.toYAML()
-                if os.path.exists(temp):
-                    # Delete temp XML file
-                    os.remove(temp)
-                return
-
-            elif table:
-                datafactory.toTABLE()
-                if os.path.exists(temp):
-                    # Delete temp XML file
-                    os.remove(temp)
-                return
-
-            else:
-                datafactory.toXML()
-                if os.path.exists(temp):
-                    # Delete temp XML file
-                    os.remove(temp)
-                return
 
         else:
-            # Loop through jobs specified by the user
-            tmp_xml_files = list()
-            for job in jobid:
-                tmp_xml_files.append("/tmp/{}_get_job_info.xml".format(job))
-
-            # Get info on all the jobs
-            i = 0
-            for job in jobid:
-                fout = open(tmp_xml_files[i], "at")
-                retrieveJobInfo(str(job), str(days), fout)
-                fout.close()
-                i += 1
+            console = Console()
             
-            i = 0
-            for xml_file in tmp_xml_files:
-                datafactory = dataFactory(xml_file, jobid[i])
-                i += 1
+            # Read job ids from a file
+            if file is not None:
+                current_doc = minidom.parse(file)
+                current_data = current_doc.getElementsByTagName("Job_Id")
 
-                # Print out the data in the format specified by the user
+                # Loop through each XML tag within the file
+                for data_entry in current_data:
+                    data = data_entry.childNodes[0].data
+                    job_id = data.split(".")
+
+                    # Get job info
+                    temp = "/tmp/{}_get_job_info.xml".format(job_id[0])
+                    fout = open(temp, "at")
+                    retrieveJobInfo(str(job_id[0]), str(days), fout)
+                    fout.close()
+
+                    # Print job info out to terminal window
+                    datafactory = dataFactory(temp, job_id[0])
+
+                    if xml:
+                        datafactory.toXML()
+                        if os.path.exists(temp):
+                            # Delete temp XML file
+                            os.remove(temp)
+                        print("\n")
+
+                    elif json:
+                        datafactory.toJSON()
+                        if os.path.exists(temp):
+                            # Delete temp XML file
+                            os.remove(temp)
+                        print("\n")
+
+                    elif yaml:
+                        datafactory.toYAML()
+                        if os.path.exists(temp):
+                            # Delete temp XML file
+                            os.remove(temp)
+                        print("\n")
+
+                    elif table:
+                        datafactory.toTABLE()
+                        if os.path.exists(temp):
+                            # Delete temp XML file
+                            os.remove(temp)
+                        print("\n")
+
+                    else:
+                        datafactory.toXML()
+                        if os.path.exists(temp):
+                            # Delete temp XML file
+                            os.remove(temp)
+                        print("\n")
+
+                return
+
+            # Check if user specified any job ids
+            elif len(jobid) == 0:
+                console.print("[bold red]No job ids specified![/bold red]")
+                console.print("Enter [bold blue]getjobinfo --help[/bold blue] for help.")
+                return
+            
+            elif len(jobid) == 1:
+                temp = "/tmp/{}_get_job_info.xml".format(random.randint(1, 1000000))
+                fout = open(temp, "at")
+                retrieveJobInfo(str(jobid[0]), str(days), fout)
+                fout.close()
+
+                # Create dataFactory to process data
+                datafactory = dataFactory(temp, jobid[0])
+
+                # Call function in data factory according to what is specified by the user
                 if xml:
                     datafactory.toXML()
-                    if os.path.exists(xml_file):
+                    if os.path.exists(temp):
                         # Delete temp XML file
-                        os.remove(xml_file)
-                    print("\n")
+                        os.remove(temp)
+                    return
 
                 elif json:
                     datafactory.toJSON()
-                    if os.path.exists(xml_file):
+                    if os.path.exists(temp):
                         # Delete temp XML file
-                        os.remove(xml_file)
-                    print("\n")
+                        os.remove(temp)
+                    return
 
                 elif yaml:
                     datafactory.toYAML()
-                    if os.path.exists(xml_file):
+                    if os.path.exists(temp):
                         # Delete temp XML file
-                        os.remove(xml_file)
-                    print("\n")
+                        os.remove(temp)
+                    return
 
                 elif table:
                     datafactory.toTABLE()
-                    if os.path.exists(xml_file):
+                    if os.path.exists(temp):
                         # Delete temp XML file
-                        os.remove(xml_file)
-                    print("\n")
+                        os.remove(temp)
+                    return
 
                 else:
                     datafactory.toXML()
-                    if os.path.exists(xml_file):
+                    if os.path.exists(temp):
                         # Delete temp XML file
-                        os.remove(xml_file)
-                    print("\n")
+                        os.remove(temp)
+                    return
 
-            return
+            else:
+                # Loop through jobs specified by the user
+                tmp_xml_files = list()
+                for job in jobid:
+                    tmp_xml_files.append("/tmp/{}_get_job_info.xml".format(job))
+
+                # Get info on all the jobs
+                i = 0
+                for job in jobid:
+                    fout = open(tmp_xml_files[i], "at")
+                    retrieveJobInfo(str(job), str(days), fout)
+                    fout.close()
+                    i += 1
+                
+                i = 0
+                for xml_file in tmp_xml_files:
+                    datafactory = dataFactory(xml_file, jobid[i])
+                    i += 1
+
+                    # Print out the data in the format specified by the user
+                    if xml:
+                        datafactory.toXML()
+                        if os.path.exists(xml_file):
+                            # Delete temp XML file
+                            os.remove(xml_file)
+                        print("\n")
+
+                    elif json:
+                        datafactory.toJSON()
+                        if os.path.exists(xml_file):
+                            # Delete temp XML file
+                            os.remove(xml_file)
+                        print("\n")
+
+                    elif yaml:
+                        datafactory.toYAML()
+                        if os.path.exists(xml_file):
+                            # Delete temp XML file
+                            os.remove(xml_file)
+                        print("\n")
+
+                    elif table:
+                        datafactory.toTABLE()
+                        if os.path.exists(xml_file):
+                            # Delete temp XML file
+                            os.remove(xml_file)
+                        print("\n")
+
+                    else:
+                        datafactory.toXML()
+                        if os.path.exists(xml_file):
+                            # Delete temp XML file
+                            os.remove(xml_file)
+                        print("\n")
+
+                return
+                
+    except RuntimeError:
+        return
 
             
 if __name__ == "__main__":
