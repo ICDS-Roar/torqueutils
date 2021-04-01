@@ -8,6 +8,15 @@ from xml.dom import minidom
 import json
 import yaml
 import csv
+from utils.verifylocale import verifylocale
+
+
+# Set locale to UTF-8 before continuing
+out, err = verifylocale()
+if err != None:
+    console = Console()
+    console.print("Uh oh. Looks like the UTF-8 locale is not supported on your system.", 
+                    "Please try using [bold blue]locale-gen en_US.UTF-8[/bold blue] before continuing.")
 
 
 class dataFactory:
@@ -163,90 +172,94 @@ def retrieveIDS(user_id, days, output_file):
 @click.option("-V", "--version", is_flag=True, help="Print version info.")
 @click.option("--license", is_flag=True, help="Print licensing info.")
 def main(user, days, xml, json, yaml, csv, table, version, license):
-    if version:
-        click.echo("getusersjobids v2.0  Copyright (C) 2021  Jason C. Nucciarone \n\n"
-                   "This program comes with ABSOLUTELY NO WARRANTY; \n"
-                   "for more details type \"getusersjobids --license\". This is free software, \n"
-                   "and you are welcome to redistribute it under certain conditions; \n"
-                   "go to https://www.gnu.org/licenses/licenses.html for more details.")
-        return
-
-    elif license:
-        click.echo("""getusersjobids: Retrieve users job ids for processing and analyzation.\n
-    Copyright (C) 2021  Jason C. Nucciarone
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
-        return
-
-    else:
-        console = Console()
-        if user is None:
-            console.print("[bold red]No user id specified![/bold red]")
-            console.print("Enter [bold blue]getusersjobids --help[/bold blue] for help.")
+    try:
+        if version:
+            click.echo("getusersjobids v2.0  Copyright (C) 2021  Jason C. Nucciarone \n\n"
+                    "This program comes with ABSOLUTELY NO WARRANTY; \n"
+                    "for more details type \"getusersjobids --license\". This is free software, \n"
+                    "and you are welcome to redistribute it under certain conditions; \n"
+                    "go to https://www.gnu.org/licenses/licenses.html for more details.")
             return
 
-        # Create temporary file to write initial XML
-        temp = "/tmp/{}_get_user_jobs.xml".format(random.randint(1, 1000000))
-        fout = open(temp, "at")
-        fout.write("<Job_Ids>")
-        retrieveIDS(user, str(days), fout)
-        fout.write("</Job_Ids>")
-        fout.close()
+        elif license:
+            click.echo("""getusersjobids: Retrieve users job ids for processing and analyzation.\n
+        Copyright (C) 2021  Jason C. Nucciarone
 
-        # Instantiate dataFactory class to print out data
-        data_factory = dataFactory(temp, user, days)
-
-        # Determine which data format to write out to terminal
-        if xml:
-            data_factory.toXML()
-            if os.path.exists(temp):
-                # Delete temp XML file
-                os.remove(temp)
-            return
-
-        elif json:
-            data_factory.toJSON()
-            if os.path.exists(temp):
-                # Delete temp XML file
-                os.remove(temp)
-            return
-
-        elif yaml:
-            data_factory.toYAML()
-            if os.path.exists(temp):
-                # Delete temp XML file
-                os.remove(temp)
-            return
-
-        elif csv:
-            data_factory.toCSV()
-            if os.path.exists(temp):
-                # Delete temp XML file
-                os.remove(temp)
-            return
-
-        elif table:
-            data_factory.toTABLE()
-            if os.path.exists(temp):
-                # Delete temp XML file
-                os.remove(temp)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.""")
             return
 
         else:
-            data_factory.toTABLE()
-            if os.path.exists(temp):
-                # Delete temp XML file
-                os.remove(temp)
-            return
+            console = Console()
+            if user is None:
+                console.print("[bold red]No user id specified![/bold red]")
+                console.print("Enter [bold blue]getusersjobids --help[/bold blue] for help.")
+                return
+
+            # Create temporary file to write initial XML
+            temp = "/tmp/{}_get_user_jobs.xml".format(random.randint(1, 1000000))
+            fout = open(temp, "at")
+            fout.write("<Job_Ids>")
+            retrieveIDS(user, str(days), fout)
+            fout.write("</Job_Ids>")
+            fout.close()
+
+            # Instantiate dataFactory class to print out data
+            data_factory = dataFactory(temp, user, days)
+
+            # Determine which data format to write out to terminal
+            if xml:
+                data_factory.toXML()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            elif json:
+                data_factory.toJSON()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            elif yaml:
+                data_factory.toYAML()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            elif csv:
+                data_factory.toCSV()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            elif table:
+                data_factory.toTABLE()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+
+            else:
+                data_factory.toTABLE()
+                if os.path.exists(temp):
+                    # Delete temp XML file
+                    os.remove(temp)
+                return
+    
+    except RuntimeError:
+        return
 
 
 if __name__ == "__main__":
