@@ -142,11 +142,10 @@ Once again, the more information you include the better! Once I review the pull 
 
 # License
 
-![GitHub](https://img.shields.io/github/license/NucciTheBoss/torqueutils)
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
 
-This repository is licensed under the GNU General Public License v3.0. 
-For more information on what this license entails, please feel free to 
-visit https://www.gnu.org/licenses/gpl-3.0.en.html.
+This repository is licensed under the permisive MIT License. For more information on what this license entails, please feel free to visit https://en.wikipedia.org/wiki/MIT_License.
+
 
 # Troubleshooting
 If you encounter any issues while using this utility on the Roar cluster then please open an issue, or contact Jason at the ICDS i-ASK center at either iask@ics.psu.edu or jcn23@psu.edu.
