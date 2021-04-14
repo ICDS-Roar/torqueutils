@@ -29,7 +29,7 @@ $ conda create --prefix /storage/work/dml129/sw7/python python=3.9
 $ ssh torque01.util.production.int.aci.ics.psu.edu
 $ export PATH=/storage/work/dml129/sw7/python/bin:$PATH
 $ cd /storage/work/dml129/sw7
-$ git clone https://github.com/NucciTheBoss/torqueutils.git
+$ git clone https://github.com/ICDS-Roar/torqueutils.git
 $ cd torqueutils
 $ pip install -r requirements.txt
 $ pip install pyinstaller
@@ -51,21 +51,21 @@ If all goes well, you should be able to successfully run **getusersjobids** in y
 
 ```
 $ ./getusersjobids --help
-Usage: getusersjobids [OPTIONS]
+usage: getusersjobids [-h] [-u USER] [-d DAYS] [--xml] [--json] [--yaml] [--csv] [--table]
+                      [-V] [--license]
 
-Options:
-  -u, --user TEXT     User to query (example: jcn23).
-  -d, --days INTEGER  Specify the number of days to check in the torque job
-                      logs (default: 5).
-
-  --xml               Print job ids in XML format.
-  --json              Print job ids in JSON format.
-  --yaml              Print job ids in YAML format.
-  --csv               Print job ids in CSV format.
-  --table             Print job ids in tabular format.
-  -V, --version       Print version info.
-  --license           Print licensing info.
-  --help              Show this message and exit.
+optional arguments:
+  -h, --help            show this help message and exit
+  -u USER, --user USER  User to query (example: jcn23).
+  -d DAYS, --days DAYS  Specify the number of days to check in the torque job logs (default:
+                        5).
+  --xml                 Print job ids in XML format.
+  --json                Print job ids in JSON format.
+  --yaml                Print job ids in YAML format.
+  --csv                 Print job ids in CSV format.
+  --table               Print job ids in tabular format.
+  -V, --version         Print version info.
+  --license             Print licensing info.
 ```
 
 Congratulations! If you received the above output, you have successfully installed **getusersjobids**! Now onto installing **getjobinfo**!
@@ -84,31 +84,35 @@ If all goes well, you should be able to successfully run **getjobinfo** in your 
 
 ```
 $ ./getjobinfo --help
-Usage: getjobinfo [OPTIONS] [JOBID]...
+usage: getjobinfo [-h] [-f FILE] [-d DAYS] [--xml] [--json] [--yaml] [--table] [-V]
+                  [--license]
+                  [jobid [jobid ...]]
 
-Options:
-  -f, --file TEXT     Read job ids to query from an XML file instead.
-  -d, --days INTEGER  Specify the number of days to check in the torque job
-                      logs (default: 5).
+positional arguments:
+  jobid
 
-  --xml               Print job info in XML format.
-  --json              Print job info in JSON format.
-  --yaml              Print job info in YAML format.
-  --table             Print job info in tabular format.
-  -V, --version       Print version info.
-  --license           Print licensing info.
-  --help              Show this message and exit.
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILE, --file FILE  Read job ids to query from an XML file instead.
+  -d DAYS, --days DAYS  Specify the number of days to check in the torque job logs (default:
+                        5).
+  --xml                 Print job info in XML format.
+  --json                Print job info in JSON format.
+  --yaml                Print job info in YAML format.
+  --table               Print job info in tabular format.
+  -V, --version         Print version info.
+  --license             Print licensing info.
 ```
 
 Congratulations! You have successfully installed the torqueutils collection!
 
 # Accessing Documentation
 
-In order to access the documentation for the torqueutils collection, you have two options. You can either access the PDF documentation located in the `share/doc` directory, or you can read the man pages located in the `share/man` directory. You can use the following commands in your terminal to open the man pages:
+In order to access the documentation for the torqueutils collection, you have two options. You can either access the PDF documentation located in the `share/doc` directory, or you can read the man pages located in the `share/man/man1` directory. You can use the following commands in your terminal to open the man pages:
 
 ```bash
-$ man share/man/getusersjobids.1
-$ man share/man/getjobinfo.1
+$ man share/man/man1/getusersjobids.1
+$ man share/man/man1/getjobinfo.1
 ```
 
 To read the PDF documentation, you can simply open the PDFs in any common PDF veiwer. 

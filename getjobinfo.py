@@ -1,4 +1,4 @@
-import click
+import argparse
 from rich.console import Console
 from rich.table import Table
 import subprocess
@@ -12,14 +12,8 @@ import lxml
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as et
 from utils.verifylocale import verifylocale
-
-
-# Set locale to UTF-8 before continuing
-out, err = verifylocale()
-if err != None:
-    console = Console()
-    console.print("Uh oh. Looks like the UTF-8 locale is not supported on your system.", 
-                    "Please try using [bold blue]locale-gen en_US.UTF-8[/bold blue] before continuing.")
+from utils.print_license import licenseheader
+from utils.print_license import licensebody
 
 
 class dataFactory:
@@ -212,43 +206,14 @@ def retrieveJobInfo(job_id, days, output_file):
         console.print("[bold red]{} not found.[/bold red]".format(job_id))
 
 
-@click.command()
-@click.argument("jobid", nargs=-1)
-@click.option("-f", "--file", default=None, help="Read job ids to query from an XML file instead.")
-@click.option("-d", "--days", default=5, help="Specify the number of days to check in the torque job logs (default: 5).")
-@click.option("--xml", is_flag=True, help="Print job info in XML format.")
-@click.option("--json", is_flag=True, help="Print job info in JSON format.")
-@click.option("--yaml", is_flag=True, help="Print job info in YAML format.")
-@click.option("--table", is_flag=True, help="Print job info in tabular format.")
-@click.option("-V", "--version", is_flag=True, help="Print version info.")
-@click.option("--license", is_flag=True, help="Print licensing info.")
-def main(jobid, file, days, xml, json, yaml, table, version, license):
+def getjobinfo(jobid, file, days, xml, json, yaml, table, version, license):
     try:
         if version:
-            click.echo("getjobinfo v2.1  Copyright (c) 2021 The Pennsylvania State University Institute for Computational and Data Sciences \n\n")
+            licenseheader("getjobinfo v2.2")
             return
 
         elif license:
-            click.echo("""getjobinfo: Query job ids to collect corresponding job info.\n
-Copyright (c) 2021 The Pennsylvania State University Institute for Computational and Data Sciences
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.""")
+            licensebody("getjobinfo: Query job ids to collect corresponding job info.")
             return
 
         else:
@@ -423,4 +388,23 @@ SOFTWARE.""")
 
             
 if __name__ == "__main__":
-    main()
+    # Set locale to UTF-8 before continuing
+    out, err = verifylocale()
+    if err != None:
+        console = Console()
+        console.print("Uh oh. Looks like the UTF-8 locale is not supported on your system.", 
+                      "Please try using [bold blue]locale-gen en_US.UTF-8[/bold blue] before continuing.")
+
+    else:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("jobid", nargs="*")
+        parser.add_argument("-f", "--file", default=None, help="Read job ids to query from an XML file instead.")
+        parser.add_argument("-d", "--days", type=int, default=5, help="Specify the number of days to check in the torque job logs (default: 5).")
+        parser.add_argument("--xml", action="store_true", help="Print job info in XML format.")
+        parser.add_argument("--json", action="store_true", help="Print job info in JSON format.")
+        parser.add_argument("--yaml", action="store_true", help="Print job info in YAML format.")
+        parser.add_argument("--table", action="store_true", help="Print job info in tabular format.")
+        parser.add_argument("-V", "--version", action="store_true", help="Print version info.")
+        parser.add_argument("--license", action="store_true", help="Print licensing info.")
+        args = parser.parse_args()
+        getjobinfo(args.jobid, args.file, args.days, args.xml, args.json, args.yaml, args.table, args.version, args.license)
